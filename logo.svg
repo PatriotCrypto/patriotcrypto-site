@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" width="640" height="300"><style>text{font-family:Inter,-apple-system,Helvetica,Arial,sans-serif}#w{font-size:54px;font-weight:800;letter-spacing:5px}#e{font-family:monospace;font-size:13px;letter-spacing:6px;fill:#b8bfd6}</style><defs>
+    <linearGradient id="lgGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffeaa9"/><stop offset=".35" stop-color="#ffc93a"/><stop offset=".62" stop-color="#ffb70f"/><stop offset="1" stop-color="#d98200"/></linearGradient>
+    <radialGradient id="lgCoin" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#ffd966"/><stop offset=".55" stop-color="#f5a300"/><stop offset="1" stop-color="#c97b00"/></radialGradient>
+    <linearGradient id="lgGoldText" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd166"/><stop offset=".55" stop-color="#ffb70f"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+    <linearGradient id="lgRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a8c"/><stop offset=".5" stop-color="#ff425b"/><stop offset="1" stop-color="#c81d3a"/></linearGradient>
+    <linearGradient id="lgWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9e2ff"/></linearGradient>
+    <linearGradient id="lgBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86bcff"/><stop offset=".5" stop-color="#3d91ff"/><stop offset="1" stop-color="#2457c8"/></linearGradient>
+    <linearGradient id="lgShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="lgClip"><circle cx="320" cy="118" r="53"/></clipPath>
+    <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#ffb70f" flood-opacity=".35"/></filter>
+  </defs>
+    
+    <g>
+    <g>
+      <polygon fill="#ffffff" points="244.0,33.5 245.6,37.8 250.2,38.0 246.6,40.8 247.8,45.3 244.0,42.7 240.2,45.3 241.4,40.8 237.8,38.0 242.4,37.8"/>
+      <polygon fill="#ffffff" points="282.0,21.5 283.6,25.8 288.2,26.0 284.6,28.8 285.8,33.3 282.0,30.7 278.2,33.3 279.4,28.8 275.8,26.0 280.4,25.8"/>
+      <polygon fill="#ffc93a" points="320.0,13.0 321.9,18.3 327.6,18.5 323.1,22.0 324.7,27.5 320.0,24.3 315.3,27.5 316.9,22.0 312.4,18.5 318.1,18.3"/>
+      <polygon fill="#ffffff" points="358.0,21.5 359.6,25.8 364.2,26.0 360.6,28.8 361.8,33.3 358.0,30.7 354.2,33.3 355.4,28.8 351.8,26.0 356.4,25.8"/>
+      <polygon fill="#ffffff" points="396.0,33.5 397.6,37.8 402.2,38.0 398.6,40.8 399.8,45.3 396.0,42.7 392.2,45.3 393.4,40.8 389.8,38.0 394.4,37.8"/>
+    </g>
+    <g>
+      <g><rect x="40" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="48" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g><rect x="80" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="88" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g><rect x="120" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="128" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g>
+      <g><rect x="400" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="408" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g><rect x="400" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="408" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g><rect x="400" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="408" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g filter="url(#lgGlow)">
+      <circle cx="320" cy="118" r="64" fill="url(#lgGold)"/>
+      <circle cx="320" cy="118" r="59" fill="none" stroke="rgba(120,70,0,.35)" stroke-width="1.6" stroke-dasharray="1.5 4.6"/>
+      <circle cx="320" cy="118" r="53" fill="url(#lgCoin)" stroke="rgba(140,80,0,.45)" stroke-width="2"/>
+      <g clip-path="url(#lgClip)"><g><rect x="-26" y="40" width="52" height="160" transform="translate(320 0) skewX(-20)" fill="url(#lgShine)"/></g></g>
+      <g transform="translate(320 118)" fill="none" stroke="#4a2a00" stroke-linecap="butt" stroke-linejoin="round" opacity=".92">
+        <path d="M-17 -27 V27" stroke-width="9"/>
+        <path d="M-17 -27 H7 a12.5 12.5 0 0 1 0 25 H-17 M-17 -2 H11 a14.5 14.5 0 0 1 0 29 H-17" stroke-width="9"/>
+        <path d="M-7 -37 V-27 M5 -37 V-27 M-7 27 V37 M5 27 V37" stroke-width="6" stroke-linecap="butt"/>
+      </g>
+      <path d="M277.5 106.6 A44 44 0 0 1 308.6 75.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <text id="w" x="320" y="246" text-anchor="middle"><tspan fill="#f4f7ff">PATRIOT</tspan><tspan fill="url(#lgGoldText)"> CRYPTO</tspan></text>
+    <rect x="250" y="262" width="40" height="4" rx="2" fill="#ff425b"/><rect x="300" y="262" width="40" height="4" rx="2" fill="#ffffff"/><rect x="350" y="262" width="40" height="4" rx="2" fill="#3d91ff"/>
+    <text id="e" x="320" y="288" text-anchor="middle">EST. 2023</text>
+    </g>
+  </svg>

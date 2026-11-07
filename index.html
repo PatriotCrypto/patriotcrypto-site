@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Patriot Crypto</title>
+<meta name="description" content="Bitcoin projects and experiments: mining pool stats, self-hosted apps, retro games and more. A hobbyist's workshop.">
+<meta name="theme-color" content="#05070f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Patriot Crypto">
+<meta property="og:description" content="Bitcoin projects and experiments: mining pool stats, self-hosted apps, retro games and more.">
+<meta property="og:url" content="https://patriotcrypto.us">
+<meta property="og:image" content="https://patriotcrypto.us/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://patriotcrypto.us/og.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #05070f;
+    --fg: #f4f7ff;
+    --muted: #b8bfd6;
+    --blue: #3d91ff;
+    --red: #ff425b;
+    --gold: #ffb70f;
+    --purple: #7852ff;
+    --glass: rgba(255, 255, 255, .07);
+    --glass-strong: rgba(255, 255, 255, .11);
+    --glass-border: rgba(255, 255, 255, .14);
+    --radius: 1.125rem;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    line-height: 1.55;
+    letter-spacing: -.01em;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 10px; }
+
+  /* ---------- Backdrop: soft colored light behind the glass ---------- */
+  .backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .85; will-change: transform; }
+  .orb.blue   { width: 46vmax; height: 46vmax; left: -12vmax; top: -16vmax; background: radial-gradient(circle, rgba(46,125,255,.55), transparent 65%); animation: drift1 28s ease-in-out infinite alternate; }
+  .orb.red    { width: 40vmax; height: 40vmax; right: -14vmax; top: -8vmax;  background: radial-gradient(circle, rgba(255,45,85,.38), transparent 65%);  animation: drift2 34s ease-in-out infinite alternate; }
+  .orb.purple { width: 44vmax; height: 44vmax; left: 38%; top: 42%;          background: radial-gradient(circle, rgba(120,82,255,.30), transparent 65%); animation: drift3 38s ease-in-out infinite alternate; }
+  .orb.gold   { width: 38vmax; height: 38vmax; left: -10vmax; bottom: -14vmax; background: radial-gradient(circle, rgba(255,179,0,.24), transparent 65%); animation: drift2 31s ease-in-out infinite alternate-reverse; }
+  .backdrop::after { /* faint top sheen */
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(120% 90% at 8% -20%, rgba(255,255,255,.12), transparent 55%);
+  }
+  @keyframes drift1 { to { transform: translate(8vmax, 6vmax) scale(1.08); } }
+  @keyframes drift2 { to { transform: translate(-7vmax, 8vmax) scale(1.1); } }
+  @keyframes drift3 { to { transform: translate(-10vmax, -6vmax) scale(.94); } }
+
+  /* ---------- Liquid glass ---------- */
+  .glass {
+    position: relative;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.28),
+      inset 0 -1px 0 rgba(255,255,255,.04),
+      0 18px 50px -18px rgba(0,0,0,.6);
+    border-radius: var(--radius);
+  }
+  .glass::before { /* specular rim that follows the pointer */
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,.16), transparent 45%);
+    opacity: .0; transition: opacity .3s ease;
+  }
+  .glass:hover::before { opacity: 1; }
+
+  .wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+
+
+  /* ---------- Header: subtle title + hamburger ---------- */
+  header {
+    position: fixed; top: max(12px, env(safe-area-inset-top)); left: 0; right: 0; z-index: 20;
+    display: flex; justify-content: center; padding: 0 16px;
+  }
+  .nav-wrap { position: relative; width: min(1120px, 100%); }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 8px 8px 22px; border-radius: 999px;
+    background: rgba(255,255,255,.075);
+  }
+  .nav-title {
+    display: inline-block; font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: -.01em;
+    background: linear-gradient(90deg, #ff6b7f 0%, #ffffff 50%, #6db0ff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 1px 6px rgba(0,0,0,.45)); transition: filter .2s;
+  }
+  .nav-title:hover { filter: drop-shadow(0 1px 6px rgba(0,0,0,.45)) brightness(1.15); }
+  .menu-btn {
+    width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    color: var(--fg); background: rgba(255,255,255,.09); border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.24); transition: background .2s;
+  }
+  .menu-btn:hover { background: rgba(255,255,255,.16); }
+  .bars { position: relative; display: block; width: 18px; height: 12px; }
+  .bars i { position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: currentColor; transition: transform .3s ease, opacity .2s ease, top .3s ease; }
+  .bars i:nth-child(1) { top: 0; } .bars i:nth-child(2) { top: 5px; } .bars i:nth-child(3) { top: 10px; }
+  .menu-btn[aria-expanded="true"] .bars i:nth-child(1) { top: 5px; transform: rotate(45deg); }
+  .menu-btn[aria-expanded="true"] .bars i:nth-child(2) { opacity: 0; }
+  .menu-btn[aria-expanded="true"] .bars i:nth-child(3) { top: 5px; transform: rotate(-45deg); }
+  .menu.glass {
+    position: absolute; right: 0; top: calc(100% + 10px); width: min(280px, 100%);
+    display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 1.25rem;
+    background: rgba(16, 20, 38, .72);
+    opacity: 0; visibility: hidden; transform: translateY(-8px) scale(.98); transform-origin: top right;
+    transition: opacity .2s ease, transform .25s ease, visibility .2s;
+  }
+  .menu.open { opacity: 1; visibility: visible; transform: none; }
+  .menu a { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 16px; border-radius: 14px; font-weight: 500; transition: background .2s; }
+  .menu a:hover { background: rgba(255,255,255,.1); }
+  .menu a svg { width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  section[id] { scroll-margin-top: 84px; }
+
+  /* ---------- Animated logo ---------- */
+  .hero-logo { margin: 0 auto 14px; font-size: 0; line-height: 0; }
+  .lg { display: block; width: min(600px, 94vw); height: auto; margin: 0 auto; overflow: visible; cursor: pointer; -webkit-tap-highlight-color: transparent; animation: lgIn 1s cubic-bezier(.2,.8,.2,1) both; }
+  .lg * { transform-box: fill-box; transform-origin: center; }
+  .lg text { font-family: var(--font-display); }
+  .lg-word { font-size: 54px; font-weight: 800; letter-spacing: 5px; }
+  .lg-est { font-family: var(--mono); font-size: 13px; letter-spacing: 6px; fill: #b8bfd6; }
+  .lg-all { animation: lgFloat 6s ease-in-out infinite; }
+  .lg-star { animation: lgTwinkle 3.2s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .lg-shine { animation: lgShine 7s ease-in-out infinite; }
+  .lg-bar { transition: transform .6s cubic-bezier(.34,1.56,.64,1); transition-delay: calc(var(--i) * 60ms); }
+  .lg:hover .lg-wing-l .lg-bar { transform: translateX(-12px); }
+  .lg:hover .lg-wing-r .lg-bar { transform: translateX(12px); }
+  .lg:hover .lg-coin { animation: lgBounce .85s cubic-bezier(.28,.84,.42,1); }
+  .lg.is-bounce .lg-coin { animation: lgBounceB .85s cubic-bezier(.28,.84,.42,1); }
+  @keyframes lgIn { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes lgFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  @keyframes lgTwinkle { 0%, 100% { opacity: .55; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.12); } }
+  @keyframes lgShine { 0%, 62% { transform: translateX(-150px); } 100% { transform: translateX(150px); } }
+  @keyframes lgBounce  { 0% { transform: translateY(0) scale(1); } 30% { transform: translateY(-14px) scale(1.1); } 55% { transform: translateY(3px) scale(.97); } 78% { transform: translateY(-4px) scale(1.03); } 100% { transform: translateY(0) scale(1); } }
+  @keyframes lgBounceB { 0% { transform: translateY(0) scale(1); } 30% { transform: translateY(-14px) scale(1.1); } 55% { transform: translateY(3px) scale(.97); } 78% { transform: translateY(-4px) scale(1.03); } 100% { transform: translateY(0) scale(1); } }
+  .lg-static { width: min(300px, 80vw); cursor: default; animation: none; }
+  .lg-static, .lg-static * { animation: none !important; }
+  .lg-static:hover .lg-bar, .lg-static:hover .lg-coin { transform: none; }
+  @media (prefers-reduced-motion: reduce) { .lg, .lg * { animation: none !important; transition: none !important; } }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: clamp(104px, 15vh, 140px) 0 clamp(56px, 9vh, 96px); }
+  .hero-grid { text-align: center; }
+  .lead { font-size: clamp(1.05rem, 2.2vw, 1.28rem); color: var(--muted); max-width: 46ch; margin: 0 auto 32px; text-wrap: pretty; }
+  .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 22px; border-radius: 999px; font-weight: 600; font-size: 15px;
+    transition: transform .2s ease, filter .2s ease, background .2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary { color: #1a1200; background: linear-gradient(180deg, #ffd166, var(--gold)); box-shadow: 0 10px 30px -8px rgba(255,183,15,.55), inset 0 1px 0 rgba(255,255,255,.6); }
+  .btn.ghost { background: rgba(255,255,255,.09); border: 1px solid var(--glass-border); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); box-shadow: inset 0 1px 0 rgba(255,255,255,.24); }
+  .btn.ghost:hover { background: rgba(255,255,255,.14); }
+
+  /* ---------- Sections ---------- */
+  section { padding: clamp(44px, 8vh, 84px) 0; }
+  .section-head { margin-bottom: 36px; max-width: 56ch; }
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+  h2 { font-family: var(--font-display); font-size: clamp(1.9rem, 4.5vw, 3rem); letter-spacing: -.035em; line-height: 1.08; margin: 10px 0 12px; font-weight: 750; }
+  .section-head p { color: var(--muted); margin: 0; font-size: 1.05rem; }
+
+  /* ---------- Project cards ---------- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card {
+    display: flex; flex-direction: column; gap: 14px; padding: 26px;
+    min-height: 260px;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), background .3s ease, border-color .3s ease;
+  }
+  .card.wide { grid-column: span 2; }
+  .card:hover { transform: translateY(-6px); background: var(--glass-strong); border-color: rgba(255,255,255,.26); }
+  .card-top { display: flex; align-items: center; justify-content: space-between; }
+  .icon {
+    width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+    background: linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,255,255,.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .c-blue .icon { color: var(--blue); } .c-gold .icon { color: var(--gold); } .c-red .icon { color: var(--red); }
+  .c-orange .icon { color: #ff8a3d; }
+  .c-purple .icon { color: #a58bff; } .c-teal .icon { color: #5ee0cf; } .c-white .icon { color: #fff; }
+  .tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 999px; color: var(--muted);
+    background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+  }
+  .card h3 { font-family: var(--font-display); font-size: 1.4rem; letter-spacing: -.025em; margin: 6px 0 0; font-weight: 700; }
+  .card p { margin: 0; color: var(--muted); font-size: .98rem; }
+  .visit {
+    margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding-top: 14px; border-top: 1px solid rgba(255,255,255,.09);
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+  }
+  .visit svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .3s ease, color .3s ease; }
+  .card:hover .visit { color: var(--fg); }
+  .card:hover .visit svg { transform: translate(3px, -3px); color: var(--gold); }
+
+  /* ---------- Featured strip ---------- */
+  .featured { padding: 0 0 clamp(20px, 4vh, 40px); }
+  .feature {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px 36px; flex-wrap: wrap;
+    padding: clamp(22px, 3.4vw, 34px);
+    background: linear-gradient(135deg, rgba(255,183,15,.10), rgba(255,255,255,.06) 45%, rgba(61,145,255,.10));
+  }
+  .feature-copy { flex: 1 1 420px; max-width: 64ch; }
+  .feature h3 { font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 1.7rem); letter-spacing: -.03em; margin: 12px 0 8px; font-weight: 700; }
+  .feature p { margin: 0; color: var(--muted); }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 40px 0 max(40px, env(safe-area-inset-bottom)); }
+  .foot {
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px;
+    padding: 30px 24px; border-radius: 2rem; font-size: 13.5px; color: var(--muted);
+  }
+  .foot p { margin: 0; }
+
+  /* ---------- Reveal on scroll (only when JS runs) ---------- */
+  .js .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+  .js .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .card.wide.last { grid-column: span 1; }
+  }
+  @media (max-width: 780px) {
+  }
+  @media (max-width: 620px) {
+    .grid { grid-template-columns: 1fr; }
+    .card.wide { grid-column: span 1; }
+    .card { min-height: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    html { scroll-behavior: auto; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .card, .btn { transition: none; }
+  }
+  /* If blur isn't supported, keep panels readable */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass, .btn.ghost { background: rgba(20, 26, 44, .92); }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="lgGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffeaa9"/><stop offset=".35" stop-color="#ffc93a"/><stop offset=".62" stop-color="#ffb70f"/><stop offset="1" stop-color="#d98200"/></linearGradient>
+    <radialGradient id="lgCoin" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#ffd966"/><stop offset=".55" stop-color="#f5a300"/><stop offset="1" stop-color="#c97b00"/></radialGradient>
+    <linearGradient id="lgGoldText" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd166"/><stop offset=".55" stop-color="#ffb70f"/><stop offset="1" stop-color="#ff8a3d"/></linearGradient>
+    <linearGradient id="lgRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a8c"/><stop offset=".5" stop-color="#ff425b"/><stop offset="1" stop-color="#c81d3a"/></linearGradient>
+    <linearGradient id="lgWhite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d9e2ff"/></linearGradient>
+    <linearGradient id="lgBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#86bcff"/><stop offset=".5" stop-color="#3d91ff"/><stop offset="1" stop-color="#2457c8"/></linearGradient>
+    <linearGradient id="lgShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <clipPath id="lgClip"><circle cx="320" cy="118" r="53"/></clipPath>
+    <filter id="lgGlow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#ffb70f" flood-opacity=".35"/></filter>
+  </defs>
+</svg>
+<div class="backdrop" aria-hidden="true">
+  <div class="orb blue"></div><div class="orb red"></div><div class="orb purple"></div><div class="orb gold"></div>
+</div>
+
+<header>
+  <div class="nav-wrap">
+    <nav class="nav glass" aria-label="Main">
+      <a class="nav-title" href="#top">Patriot Crypto</a>
+      <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+    </nav>
+    <div class="menu glass" id="site-menu">
+      <a href="#top">Home</a>
+      <a href="#projects">Projects</a>
+      <a href="#featured">Featured</a>
+      <a href="https://stats.patriotcrypto.us" target="_blank" rel="noopener noreferrer">Live pool stats <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <h1 class="hero-logo"><svg class="lg" viewBox="0 0 640 300" role="img" aria-label="Patriot Crypto logo" focusable="false">
+    <title>Patriot Crypto</title>
+    <g class="lg-all">
+    <g class="lg-stars">
+      <polygon class="lg-star" style="--d:0.00s" fill="#ffffff" points="244.0,33.5 245.6,37.8 250.2,38.0 246.6,40.8 247.8,45.3 244.0,42.7 240.2,45.3 241.4,40.8 237.8,38.0 242.4,37.8"/>
+      <polygon class="lg-star" style="--d:0.35s" fill="#ffffff" points="282.0,21.5 283.6,25.8 288.2,26.0 284.6,28.8 285.8,33.3 282.0,30.7 278.2,33.3 279.4,28.8 275.8,26.0 280.4,25.8"/>
+      <polygon class="lg-star" style="--d:0.70s" fill="#ffc93a" points="320.0,13.0 321.9,18.3 327.6,18.5 323.1,22.0 324.7,27.5 320.0,24.3 315.3,27.5 316.9,22.0 312.4,18.5 318.1,18.3"/>
+      <polygon class="lg-star" style="--d:1.05s" fill="#ffffff" points="358.0,21.5 359.6,25.8 364.2,26.0 360.6,28.8 361.8,33.3 358.0,30.7 354.2,33.3 355.4,28.8 351.8,26.0 356.4,25.8"/>
+      <polygon class="lg-star" style="--d:1.40s" fill="#ffffff" points="396.0,33.5 397.6,37.8 402.2,38.0 398.6,40.8 399.8,45.3 396.0,42.7 392.2,45.3 393.4,40.8 389.8,38.0 394.4,37.8"/>
+    </g>
+    <g class="lg-wing lg-wing-l">
+      <g class="lg-bar" style="--i:0"><rect x="40" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="48" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:1"><rect x="80" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="88" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:2"><rect x="120" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="128" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g class="lg-wing lg-wing-r">
+      <g class="lg-bar" style="--i:0"><rect x="400" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="408" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:1"><rect x="400" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="408" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:2"><rect x="400" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="408" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g class="lg-coin" filter="url(#lgGlow)">
+      <circle cx="320" cy="118" r="64" fill="url(#lgGold)"/>
+      <circle cx="320" cy="118" r="59" fill="none" stroke="rgba(120,70,0,.35)" stroke-width="1.6" stroke-dasharray="1.5 4.6"/>
+      <circle cx="320" cy="118" r="53" fill="url(#lgCoin)" stroke="rgba(140,80,0,.45)" stroke-width="2"/>
+      <g clip-path="url(#lgClip)"><g class="lg-shine"><rect x="-26" y="40" width="52" height="160" transform="translate(320 0) skewX(-20)" fill="url(#lgShine)"/></g></g>
+      <g transform="translate(320 118)" fill="none" stroke="#4a2a00" stroke-linecap="butt" stroke-linejoin="round" opacity=".92">
+        <path d="M-17 -27 V27" stroke-width="9"/>
+        <path d="M-17 -27 H7 a12.5 12.5 0 0 1 0 25 H-17 M-17 -2 H11 a14.5 14.5 0 0 1 0 29 H-17" stroke-width="9"/>
+        <path d="M-7 -37 V-27 M5 -37 V-27 M-7 27 V37 M5 27 V37" stroke-width="6" stroke-linecap="butt"/>
+      </g>
+      <path d="M277.5 106.6 A44 44 0 0 1 308.6 75.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <text class="lg-word" x="320" y="246" text-anchor="middle"><tspan fill="#f4f7ff">PATRIOT</tspan><tspan fill="url(#lgGoldText)"> CRYPTO</tspan></text>
+    <rect x="250" y="262" width="40" height="4" rx="2" fill="#ff425b"/><rect x="300" y="262" width="40" height="4" rx="2" fill="#ffffff"/><rect x="350" y="262" width="40" height="4" rx="2" fill="#3d91ff"/>
+    <text class="lg-est" x="320" y="288" text-anchor="middle">EST. 2023</text>
+    </g>
+  </svg></h1>
+        <p class="lead">A hobbyist's workshop for Bitcoin mining, self-hosted software, retro games and other experiments. Everything here is a personal project, shared for anyone who's curious.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projects">Explore the projects</a>
+          <a class="btn ghost" href="https://stats.patriotcrypto.us" target="_blank" rel="noopener noreferrer">Live pool stats
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Projects</span>
+        <h2>What I'm working on.</h2>
+        <p>A few of the projects I tinker with in my spare time. Select any card to visit.</p>
+      </div>
+
+      <div class="grid">
+        <a class="card wide glass c-blue reveal" href="https://stats.patriotcrypto.us" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+          </div>
+          <h3>Patriot Crypto Pool</h3>
+          <p>A public Bitcoin mining pool I run as a hobby. View live hashrate, active miners and blocks found, and get connection details for your own miner.</p>
+          <div class="visit"><span>stats.patriotcrypto.us</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card glass c-gold reveal" href="https://theminutemanbtc.com" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          </div>
+          <h3>The Minuteman BTC</h3>
+          <p>A long-running savings experiment. An automated script buys $10 of Bitcoin each day at noon ET, publishes every purchase, and moves the balance to cold storage for public verification.</p>
+          <div class="visit"><span>theminutemanbtc.com</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card glass c-purple reveal" href="https://blockchainbible.org" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/></svg></span>
+          </div>
+          <h3>Blockchain Bible</h3>
+          <p>A free, ad-free King James Bible reader. Each book is inscribed on the Bitcoin blockchain, so readers can independently verify the text.</p>
+          <div class="visit"><span>blockchainbible.org</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card glass c-teal reveal" href="https://patriot-server-hub.base44.app" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></span>
+          </div>
+          <h3>Patriot Apps</h3>
+          <p>A collection of self-hosted applications for Umbrel home servers, designed to keep your data on hardware you own.</p>
+          <div class="visit"><span>patriot-server-hub.base44.app</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card glass c-red reveal" href="https://lost-seed-quest.base44.app" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11.5" r=".8"/><circle cx="18.5" cy="14" r=".8"/></svg></span>
+          </div>
+          <h3>Patriot Crypto Games</h3>
+          <p>Free, independent Game Boy Color games with Bitcoin themes, including The Lost Seed and The Newport Bitcoin Saga.</p>
+          <div class="visit"><span>lost-seed-quest.base44.app</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card glass c-white reveal" href="https://patriot-metals.bigcartel.com" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          </div>
+          <h3>Patriot Metals</h3>
+          <p>A small online shop offering handmade, American-made silver and copper goods, Goldbacks, crypto-themed items and patriotic apparel.</p>
+          <div class="visit"><span>patriot-metals.bigcartel.com</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+
+        <a class="card wide last glass c-orange reveal" href="https://bitkids.us" target="_blank" rel="noopener noreferrer">
+          <div class="card-top">
+            <span class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.6.2 4.5 2.3 4.5 5"/></svg></span>
+          </div>
+          <h3>BitKids</h3>
+          <p>A family chore-tracking app that pays kids in Bitcoin (sats) for completed chores. Parents hold the keys and approve every payout, making it a hands-on way to teach earning and saving.</p>
+          <div class="visit"><span>bitkids.us</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured" id="featured" aria-labelledby="featured-title">
+    <div class="wrap">
+      <div class="feature glass reveal">
+        <div class="feature-copy">
+          <span class="tag">Featured</span>
+          <h3 id="featured-title">Patriot Metals &times; Ballet</h3>
+          <p>Ballet, the maker of physical Bitcoin wallets, featured our collaboration: a coin-shaped copper Bitcoin wallet pairing Patriot Metals craftsmanship with Ballet's non-custodial cold-storage technology. Ballet lists it as a limited run of 100.</p>
+        </div>
+        <a class="btn ghost" href="https://www.ballet.com/collaborations/" target="_blank" rel="noopener noreferrer">See it on Ballet
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot glass">
+      <a href="#top" aria-label="Patriot Crypto, back to top" style="display:block;line-height:0"><svg class="lg lg-static" viewBox="0 0 640 300" role="img" aria-label="Patriot Crypto logo" focusable="false">
+    <title>Patriot Crypto</title>
+    <g class="lg-all">
+    <g class="lg-stars">
+      <polygon class="lg-star" style="--d:0.00s" fill="#ffffff" points="244.0,33.5 245.6,37.8 250.2,38.0 246.6,40.8 247.8,45.3 244.0,42.7 240.2,45.3 241.4,40.8 237.8,38.0 242.4,37.8"/>
+      <polygon class="lg-star" style="--d:0.35s" fill="#ffffff" points="282.0,21.5 283.6,25.8 288.2,26.0 284.6,28.8 285.8,33.3 282.0,30.7 278.2,33.3 279.4,28.8 275.8,26.0 280.4,25.8"/>
+      <polygon class="lg-star" style="--d:0.70s" fill="#ffc93a" points="320.0,13.0 321.9,18.3 327.6,18.5 323.1,22.0 324.7,27.5 320.0,24.3 315.3,27.5 316.9,22.0 312.4,18.5 318.1,18.3"/>
+      <polygon class="lg-star" style="--d:1.05s" fill="#ffffff" points="358.0,21.5 359.6,25.8 364.2,26.0 360.6,28.8 361.8,33.3 358.0,30.7 354.2,33.3 355.4,28.8 351.8,26.0 356.4,25.8"/>
+      <polygon class="lg-star" style="--d:1.40s" fill="#ffffff" points="396.0,33.5 397.6,37.8 402.2,38.0 398.6,40.8 399.8,45.3 396.0,42.7 392.2,45.3 393.4,40.8 389.8,38.0 394.4,37.8"/>
+    </g>
+    <g class="lg-wing lg-wing-l">
+      <g class="lg-bar" style="--i:0"><rect x="40" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="48" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:1"><rect x="80" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="88" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:2"><rect x="120" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="128" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g class="lg-wing lg-wing-r">
+      <g class="lg-bar" style="--i:0"><rect x="400" y="91.5" width="200" height="13" rx="6.5" fill="url(#lgRed)"/><rect x="408" y="93.5" width="184" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:1"><rect x="400" y="111.5" width="160" height="13" rx="6.5" fill="url(#lgWhite)"/><rect x="408" y="113.5" width="144" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+      <g class="lg-bar" style="--i:2"><rect x="400" y="131.5" width="120" height="13" rx="6.5" fill="url(#lgBlue)"/><rect x="408" y="133.5" width="104" height="3" rx="1.5" fill="#fff" opacity=".38"/></g>
+    </g>
+    <g class="lg-coin" filter="url(#lgGlow)">
+      <circle cx="320" cy="118" r="64" fill="url(#lgGold)"/>
+      <circle cx="320" cy="118" r="59" fill="none" stroke="rgba(120,70,0,.35)" stroke-width="1.6" stroke-dasharray="1.5 4.6"/>
+      <circle cx="320" cy="118" r="53" fill="url(#lgCoin)" stroke="rgba(140,80,0,.45)" stroke-width="2"/>
+      <g clip-path="url(#lgClip)"><g class="lg-shine"><rect x="-26" y="40" width="52" height="160" transform="translate(320 0) skewX(-20)" fill="url(#lgShine)"/></g></g>
+      <g transform="translate(320 118)" fill="none" stroke="#4a2a00" stroke-linecap="butt" stroke-linejoin="round" opacity=".92">
+        <path d="M-17 -27 V27" stroke-width="9"/>
+        <path d="M-17 -27 H7 a12.5 12.5 0 0 1 0 25 H-17 M-17 -2 H11 a14.5 14.5 0 0 1 0 29 H-17" stroke-width="9"/>
+        <path d="M-7 -37 V-27 M5 -37 V-27 M-7 27 V37 M5 27 V37" stroke-width="6" stroke-linecap="butt"/>
+      </g>
+      <path d="M277.5 106.6 A44 44 0 0 1 308.6 75.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <text class="lg-word" x="320" y="246" text-anchor="middle"><tspan fill="#f4f7ff">PATRIOT</tspan><tspan fill="url(#lgGoldText)"> CRYPTO</tspan></text>
+    <rect x="250" y="262" width="40" height="4" rx="2" fill="#ff425b"/><rect x="300" y="262" width="40" height="4" rx="2" fill="#ffffff"/><rect x="350" y="262" width="40" height="4" rx="2" fill="#3d91ff"/>
+    <text class="lg-est" x="320" y="288" text-anchor="middle">EST. 2023</text>
+    </g>
+  </svg></a>
+      <p>Personal hobby projects shared for fun and education. Nothing here is financial advice.</p>
+      <p>&copy; <span id="year">2026</span> Patriot Crypto</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    document.documentElement.classList.add('js');
+    var y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
+
+    // Hamburger menu
+    var btn = document.querySelector('.menu-btn'), menu = document.getElementById('site-menu');
+    if (btn && menu) {
+      var setOpen = function (open) {
+        menu.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(!menu.classList.contains('open')); });
+      menu.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+      document.addEventListener('click', function (e) { if (!menu.contains(e.target)) setOpen(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { setOpen(false); btn.focus(); } });
+    }
+
+    // Logo: bounce again on tap/click
+    var lg = document.querySelector('.hero-logo .lg');
+    if (lg) {
+      lg.addEventListener('pointerdown', function () {
+        lg.classList.remove('is-bounce'); void lg.getBoundingClientRect(); lg.classList.add('is-bounce');
+      });
+      lg.addEventListener('animationend', function (e) { if (e.animationName === 'lgBounceB') lg.classList.remove('is-bounce'); });
+    }
+
+    // Pointer-following highlight on glass panels
+    document.querySelectorAll('.glass').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+
+    // Reveal on scroll
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { items.forEach(function (i) { i.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, { threshold: .12 });
+    items.forEach(function (el, i) {
+      el.style.transitionDelay = (i % 3) * 80 + 'ms';
+      io.observe(el);
+    });
+  })();
+</script>
+</body>
+</html>
